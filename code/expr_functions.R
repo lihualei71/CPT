@@ -1,5 +1,4 @@
 library("quantreg")
-.libPaths(c('~/Rpkg',.libPaths()))
 library("hdi")
 source("CPT.R")
 

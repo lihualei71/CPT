@@ -20,13 +20,6 @@ filename <- paste0("../data/power_", X_dist,
                    "_ratio", ratio, "_ninds", ninds,
                    "_seed", seed, ".RData")
 
-## X_dist <- "ANOVA1"
-## eps_dist_name <- "normal"
-## eps_dist <- dist_map(eps_dist_name)
-## ratio <- 25
-## ninds <- 5
-## seed <- 1
-
 X_file <- paste0("../data/mat_", X_dist, "_ratio", ratio,
                  "_ninds", ninds, "_seed", seed, ".RData")
 load(X_file)

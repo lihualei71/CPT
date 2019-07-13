@@ -1,7 +1,6 @@
 library("MASS")
 library("RSpectra")
 ## devtools::install_url("https://cran.r-project.org/src/contrib/Archive/gaoptim/gaoptim_1.1.tar.gz")
-.libPaths(c('~/Rpkg',.libPaths()))
 library("gaoptim")
 
 ## Calculate the 2-norm of a vector
