@@ -1,7 +1,7 @@
 # Paper Repository for Cyclic Permutation Test (CPT)
 
 This repository contains the code to implement all examples in our paper: [An Assumption-Free Exact Test For Fixed-Design Linear Models With Exchangeable Errors](https://arxiv.org/abs/). 
-The folder `code/` contains all R files for implementation and bash files for submitting the jobs to a cluster with [Slurm system](https://slurm.schedmd.com/overview.html). The total computation load is $\sim$20000 CPU hours to reproduce all experimental results in this paper. I used 256 cores for $\sim$7 days. 
+The folder `code/` contains all R files for implementation and bash files for submitting the jobs to a cluster with [Slurm system](https://slurm.schedmd.com/overview.html). The total computation load is ~20000 CPU hours to reproduce all experimental results in this paper. I used 256 cores for ~7 days. 
 
 - `CPT.R` contains the implementation of cyclic permutation test. It depends on the "gaoptim" package for the genetic algorithm which has been removed from CRAN on 2018-06-17. But it has better performance than other CRAN packages for our purpose so we keep it. The following code can be used to download the package.
 ```
