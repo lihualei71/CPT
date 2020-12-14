@@ -101,23 +101,20 @@ fast_Ftests_pow <- function(X, testinds, err_dist,
     if (r == 1){
         base_modifier <- resid(lm(X[, testinds] ~ X[, -testinds]))
         base_modifier <- as.numeric(base_modifier)
-        base_signal <- X[, testinds]        
     } else {
         betadir <- dir_dist(nreps)
         base_modifier <- resid(lm(X[, testinds] ~ X[, -testinds]))
         base_modifier <- base_modifier %*% betadir
-        base_signal <- X[, testinds] %*% betadir
     }
     
     resids_full <- resid(lm(eps_mat ~ X))
-    rss_full <- as.numeric(colSums(resids_full * eps_mat))
+    rss_full <- as.numeric(colSums(resids_full^2))
 
     resids_reduce0 <- resid(lm(eps_mat ~ X[, -testinds]))
     rss_reduce_list <- lapply(beta, function(b){
         modifier <- base_modifier * b
-        signal <- base_signal * b
         resids_reduce <- resids_reduce0 + modifier
-        as.numeric(colSums(resids_reduce * (eps_mat + signal)))
+        as.numeric(colSums(resids_reduce^2))
     })
     
     df1 <- r
@@ -175,19 +172,19 @@ fast_FPerm_pow <- function(X, testinds, err_dist,
     }    
     resids_reduce0 <- resid(lm(eps_mat ~ X[, -testinds]))
     resids_full <- resid(lm(eps_mat ~ X))
-    rss_full <- as.numeric(colSums(resids_full * eps_mat))
+    rss_full <- as.numeric(colSums(resids_full^2))
 
     power <- sapply(beta, function(b){
         modifier <- base_modifier * b
         signal <- base_signal * b
         resids_reduce <- resids_reduce0 + modifier
-        rss_reduce <- as.numeric(colSums(resids_reduce * (eps_mat + signal)))
+        rss_reduce <- as.numeric(colSums(resids_reduce^2))
         rss_full_perm <- lapply(1:nperms, function(i){
             Xperm <- X
             Xperm[, testinds] <- Xperm[sample(n, n), testinds]
             y_mat <- eps_mat + signal
             resids_full <- resid(lm(y_mat ~ Xperm))
-            rss_full <- as.numeric(colSums(resids_full * y_mat))
+            rss_full <- as.numeric(colSums(resids_full^2))
             rss_full
         })
         rss_full_perm <- do.call(cbind, rss_full_perm)
@@ -222,27 +219,24 @@ fast_FPerm_FL_pow <- function(X, testinds, err_dist,
     mod_reduce <- lm(eps_mat ~ X[, -testinds])
     resids_reduce0 <- resid(mod_reduce)
     preds_reduce0 <- predict(mod_reduce)
-    rss_reduce0 <- as.numeric(colSums(resids_reduce0 * eps_mat))
+    rss_reduce0 <- as.numeric(colSums(resids_reduce0^2))
     resids_full0 <- resid(lm(eps_mat ~ X))
-    rss_full0 <- as.numeric(colSums(resids_full0 * eps_mat))
+    rss_full0 <- as.numeric(colSums(resids_full0^2))
     
     power <- sapply(beta, function(b){
         resids_modifier <- base_modifier * b
         preds_modifier <- base_preds * b
         resids_reduce <- resids_reduce0 + resids_modifier
         preds_reduce <- preds_reduce0 + preds_modifier
-        rss_reduce_modified <- as.numeric(colSums(resids_reduce * eps_mat))
+        rss_reduce_modified <- as.numeric(colSums(resids_reduce^2))
         Fstats <- (rss_reduce_modified - rss_full0) / rss_full0
         Fstats_perm <- lapply(1:nperms, function(i){
-            ## err <- apply(resids_reduce, 2, function(x){
-            ##     x[sample(n, n)]
-            ## })
             err <- resids_reduce[sample(n, n), ]
             y_mat <- preds_reduce + err
             resids_reduce <- resid(lm(y_mat ~ X[, -testinds]))
-            rss_reduce <- as.numeric(colSums(resids_reduce * y_mat))
+            rss_reduce <- as.numeric(colSums(resids_reduce^2))
             resids_full <- resid(lm(y_mat ~ X))
-            rss_full <- as.numeric(colSums(resids_full * y_mat))
+            rss_full <- as.numeric(colSums(resids_full^2))
             (rss_reduce - rss_full) / rss_full
         })
         Fstats_perm <- do.call(cbind, Fstats_perm)
