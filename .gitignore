@@ -6,3 +6,4 @@ temp
 *new*
 mat*.RData
 .Rhistory
+figs/backup/*

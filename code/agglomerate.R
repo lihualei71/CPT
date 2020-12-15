@@ -1,3 +1,4 @@
+
 #### Agglomerate results on power
 params <- lapply(1:5, function(i){
     params_filename <- paste0("params_CPT_expr_", i, ".txt")
@@ -23,7 +24,8 @@ for (i in 1:nrow(params)){
     }
 }
 
-res <- do.call(rbind, reslist)
+res <- do.call(rbind, reslist) %>%
+    arrange(seed, ratio, ninds, epsdist, Xdist, methods, signal)
 
 save(file = "../data/power_CPT_expr.RData", res)
 

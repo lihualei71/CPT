@@ -17,14 +17,17 @@ res <- res %>% mutate(
                    labels = paste0("n/p = ", c(25, 30, 40))))
 
 size_df <- res %>% filter(signal == 0) %>%
-    mutate(methods = factor(methods, levels = c("CPTw", "CPTs", "CPTr", "t/F", "Perm", "FL", "LAD", "GB")))
+    mutate(methods = factor(methods, levels = c("CPTs", "CPTw", "CPTr", "t/F", "Perm", "FL", "LAD", "GB"),
+           labels = paste0("M", 1:8)))
 power_df <- res %>% filter(signal != 0) %>%
-    mutate(methods = factor(methods, levels = c("CPTw", "CPTs", "CPTr", "t/F", "Perm", "FL", "LAD", "GB")))
+    mutate(methods = factor(methods,
+               levels = c("CPTs", "CPTw", "CPTr", "t/F", "Perm", "FL", "LAD", "GB"),
+               labels = c("CPTs", "CPTw", "CPTr", "t/F", "Permutation", "Freedman-Lane", "Least Abs. Dev.", "GroupBound")))
 power_df_CPT <- power_df %>%
-    filter(methods %in% c("CPTw", "CPTs", "CPTr")) %>%
+    filter(methods %in% c("CPTs", "CPTw", "CPTr")) %>%
     spread(methods, power)
 power_df_others <- power_df %>%
-    filter(!methods %in% c("CPTw", "CPTs", "CPTr"))
+    filter(!methods %in% c("CPTs", "CPTw", "CPTr"))
 power_df <- left_join(power_df_others, power_df_CPT,
                       by = c("signal", "Xdist", "epsdist",
                              "ratio", "ninds", "seed")) %>%
@@ -56,13 +59,14 @@ for (i in 1:nrow(size_exprs)){
         xlab("Methods") + ylab("Type-I error") +
         theme_bw() +
         theme(panel.grid = element_blank(),
+              legend.position = "none",              
               axis.title = element_text(size = 15),
               axis.text = element_text(size = 9),
               strip.text = element_text(size = 15))
 
 
     ggsave(filename = paste0("../figs/size_", Xdist_label,
-               "_", ninds_label, ".pdf"),
+               "_", ninds_label, "_Biometrika.pdf"),
            size_plot, width = 9.5, height = 4.5)
 }
 
@@ -82,24 +86,32 @@ for (i in 1:nrow(power_exprs)){
         ungroup() %>%
         ggplot(aes(x = signal, y = med,
                    color = CPT, linetype = CPT)) +
-        geom_point() + geom_line() + 
+        geom_point(aes(shape = CPT)) + geom_line() + 
         ## geom_ribbon(aes(ymin = low, ymax = high),
         ##             linetype = 3, alpha = 0.1) +
         ## ggplot(aes(x = signal, y = powratio, color = CPT)) +
         ## geom_smooth(alpha = 0.75) + 
         facet_grid(methods ~ ratio, scales = "free_y") +
         geom_hline(yintercept = 1, color = "black") +
-        scale_color_discrete(name = "Type of CPT") + 
-        scale_linetype_discrete(name = "Type of CPT") +
+        scale_color_manual(name = "Type of CPT",
+                           values = c("CPTs" = "red",
+                                      "CPTw" = "blue",
+                                      "CPTr" = "#FF8C00")) + 
+        scale_linetype_manual(name = "Type of CPT",
+                              values = c("CPTs" = "solid",
+                                         "CPTw" = "longdash",
+                                         "CPTr" = "dotted")) +
         xlab("Relative Signal-to-noise Ratio") +
         ylab("Ratio of power") + 
         theme_bw() +
         theme(panel.grid = element_blank(),
+              legend.position = "none",
               axis.title = element_text(size = 15),
               axis.text = element_text(size = 10),
-              strip.text = element_text(size = 15))
+              strip.text = element_text(size = 12.5))
 
     ggsave(filename = paste0("../figs/power_", Xdist_label,
-               "_", epsdist_label, "_", ninds_label, ".pdf"),
-           power_plot, width = 9.5, height = 8.5)
+               "_", epsdist_label, "_", ninds_label,
+               "_Biometrika.pdf"),
+           power_plot, width = 7.5, height = 8.5)
 }
